@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:VisorMat"
+        x:Class="VisorMat.MainWindow"
+        Title="VisorMat"
+        Width="960"
+        Height="640"
+        MinWidth="640"
+        MinHeight="420"
+        WindowStartupLocation="CenterScreen">
+  <Grid Margin="24" RowDefinitions="Auto,Auto,Auto,*">
+    <TextBlock Grid.Row="0"
+               FontSize="28"
+               FontWeight="SemiBold"
+               Text="VisorMat" />
+    <TextBlock Grid.Row="1"
+               Margin="0,6,0,20"
+               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+               Text="Inspección rápida de matrices MATLAB, sin abrir MATLAB" />
+
+    <Border Grid.Row="2"
+            Padding="16"
+            Background="{DynamicResource SystemControlHighlightAltLowBrush}"
+            BorderBrush="{DynamicResource SystemControlHighlightAltAccentBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+      <StackPanel Spacing="8">
+        <TextBlock FontWeight="SemiBold" Text="Archivo" />
+        <TextBlock x:Name="FilePathText"
+                   FontFamily="Consolas, Menlo, monospace"
+                   TextWrapping="Wrap" />
+        <TextBlock x:Name="StatusText"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                   TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+
+    <Border x:Name="MatrixPanel"
+            Grid.Row="3"
+            Margin="0,16,0,0"
+            Padding="16"
+            IsVisible="False"
+            Background="{DynamicResource SystemControlHighlightAltLowBrush}"
+            BorderBrush="{DynamicResource SystemControlHighlightAltAccentBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock x:Name="MatrixTitleText"
+                   Margin="0,0,0,12"
+                   FontSize="16"
+                   FontWeight="SemiBold" />
+        <ScrollViewer Grid.Row="1"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+          <local:MatrixTable x:Name="MatrixTable" />
+        </ScrollViewer>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>
