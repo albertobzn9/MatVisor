@@ -8,6 +8,8 @@
   <string>VisorMat</string>
   <key>CFBundleIdentifier</key>
   <string>com.valentia.visormat</string>
+  <key>CFBundleIconFile</key>
+  <string>VisorMat</string>
   <key>CFBundleName</key>
   <string>VisorMat</string>
   <key>CFBundlePackageType</key>

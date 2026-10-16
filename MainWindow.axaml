@@ -3,6 +3,7 @@
         xmlns:local="using:VisorMat"
         x:Class="VisorMat.MainWindow"
         Title="VisorMat"
+        Icon="/Assets/visormat.ico"
         Width="960"
         Height="640"
         MinWidth="640"

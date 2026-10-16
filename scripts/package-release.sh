@@ -34,6 +34,8 @@ dotnet publish "$repository_root/VisorMat.csproj" \
 mkdir -p "$mac_app/Contents/MacOS"
 ditto "$mac_publish" "$mac_app/Contents/MacOS"
 cp "$repository_root/packaging/macos/Info.plist" "$mac_app/Contents/Info.plist"
+mkdir -p "$mac_app/Contents/Resources"
+cp "$repository_root/Assets/visormat.icns" "$mac_app/Contents/Resources/VisorMat.icns"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $version" "$mac_app/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $version" "$mac_app/Contents/Info.plist"
 chmod +x "$mac_app/Contents/MacOS/VisorMat"
