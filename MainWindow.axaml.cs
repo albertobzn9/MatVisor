@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using MathNet.Numerics.LinearAlgebra;
 using System.IO;
 
@@ -25,8 +27,8 @@ public partial class MainWindow : Window
     {
         if (string.IsNullOrWhiteSpace(_filePath))
         {
-            FilePathText.Text = "No se recibió ningún archivo.";
-            StatusText.Text = "Prueba iniciando VisorMat con la ruta de un archivo .mat.";
+            FilePathText.Text = "Elige un archivo .mat para comenzar.";
+            StatusText.Text = "También puedes iniciar VisorMat entregándole la ruta de un archivo .mat.";
             return;
         }
 
@@ -37,14 +39,45 @@ public partial class MainWindow : Window
 
     private async Task LoadLaunchFileAsync()
     {
-        if (string.IsNullOrWhiteSpace(_filePath))
+        if (!string.IsNullOrWhiteSpace(_filePath))
         {
+            await LoadFileAsync(Path.GetFullPath(_filePath));
+        }
+    }
+
+    private async void OpenFileButton_Click(object? sender, RoutedEventArgs eventArgs)
+    {
+        if (!StorageProvider.CanOpen)
+        {
+            StatusText.Text = "Este sistema no permite abrir el selector de archivos.";
             return;
         }
 
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Abrir archivo MATLAB",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new FilePickerFileType("Archivo MATLAB")
+                {
+                    Patterns = ["*.mat"]
+                }
+            ]
+        });
+
+        var file = files.FirstOrDefault();
+        if (file is not null)
+        {
+            await LoadFileAsync(file.Path.LocalPath);
+        }
+    }
+
+    private async Task LoadFileAsync(string filePath)
+    {
         try
         {
-            var fullPath = Path.GetFullPath(_filePath);
+            var fullPath = Path.GetFullPath(filePath);
             FilePathText.Text = fullPath;
 
             if (!File.Exists(fullPath))
@@ -68,6 +101,7 @@ public partial class MainWindow : Window
         MatrixTable.Display(matrix);
         MatrixTitleText.Text = $"Nombre: {Path.GetFileNameWithoutExtension(filePath)} | Tamaño: ({matrix.RowCount}, {matrix.ColumnCount})";
         StatusText.Text = "Matriz cargada. Arrastra sobre las celdas para seleccionar un rango; usa Ctrl+C o ⌘C para copiarlo.";
+        Title = $"VisorMat — {Path.GetFileName(filePath)}";
         MatrixPanel.IsVisible = true;
     }
 }

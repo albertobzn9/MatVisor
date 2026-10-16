@@ -2,7 +2,7 @@
 
 Una herramienta de escritorio ultra rápida diseñada para investigadores que necesitan inspeccionar archivos `.mat` sin tener que abrir MATLAB.
 
-> Estado actual: la rama `feature/avalonia-foundation` abre el archivo entregado al iniciar y muestra su primera matriz numérica en una tabla de solo lectura. La asociación por doble clic se configurará con los instaladores en una etapa posterior.
+> Estado actual: la rama `feature/avalonia-foundation` permite elegir un archivo `.mat` desde la aplicación o abrir el archivo entregado al iniciar; muestra su primera matriz numérica en una tabla de solo lectura. La asociación por doble clic se configurará con los instaladores en una etapa posterior.
 
 ## El Problema
 Abrir MATLAB solo para revisar si los datos de un entrenamiento son correctos consume tiempo y memoria RAM. VisorMat resuelve esto permitiendo una inspección instantánea.
@@ -24,7 +24,7 @@ Requiere el SDK de .NET 10. Desde la raíz del repositorio:
 dotnet run -- /ruta/a/archivo.mat
 ```
 
-La ventana debe mostrar el nombre y las dimensiones de la primera matriz numérica, además de sus valores en una tabla. Esta versión aún no permite seleccionar otras variables del archivo.
+Pulsa **Abrir archivo .mat…** y selecciona el archivo, o inicia la aplicación con su ruta. La ventana debe mostrar el nombre y las dimensiones de la primera matriz numérica, además de sus valores en una tabla. Esta versión aún no permite seleccionar otras variables del archivo.
 
 Para seleccionar varias celdas, haz clic en la primera y arrastra el cursor hasta la última. `Cmd+A` selecciona toda la matriz en macOS y `Ctrl+A` hace lo mismo en Windows; `Cmd+C` o `Ctrl+C` copia el rango seleccionado para pegarlo en Excel.
 

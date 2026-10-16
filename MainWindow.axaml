@@ -9,10 +9,15 @@
         MinHeight="420"
         WindowStartupLocation="CenterScreen">
   <Grid Margin="24" RowDefinitions="Auto,Auto,Auto,*">
-    <TextBlock Grid.Row="0"
-               FontSize="28"
-               FontWeight="SemiBold"
-               Text="VisorMat" />
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+      <TextBlock FontSize="28"
+                 FontWeight="SemiBold"
+                 Text="VisorMat" />
+      <Button Grid.Column="1"
+              Padding="14,8"
+              Click="OpenFileButton_Click"
+              Content="Abrir archivo .mat…" />
+    </Grid>
     <TextBlock Grid.Row="1"
                Margin="0,6,0,20"
                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
