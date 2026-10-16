@@ -47,6 +47,16 @@ dotnet publish -c Release -r osx-arm64 --self-contained true
 
 Los paquetes de instalación y la asociación por doble clic se crearán después de que la tabla esté migrada.
 
+## Crear una versión para distribuir
+
+En macOS, el siguiente comando genera un `.dmg` y un `.zip` con `VisorMat.app` para Apple Silicon, además de un `.exe` autocontenido y su `.zip` para Windows de 64 bits:
+
+```bash
+./scripts/package-release.sh 1.1.0
+```
+
+Los cuatro archivos se guardan en `artifacts/release/1.1.0`. El `.dmg` permite arrastrar VisorMat a Aplicaciones; el `.exe` de Windows se abre con doble clic y no requiere que .NET esté instalado. Los paquetes sin firmar pueden mostrar una advertencia de seguridad al descargarse.
+
 ## Archivo Paralelo En Drive
 
 El snapshot usado como evidencia tutoral se conserva en:
