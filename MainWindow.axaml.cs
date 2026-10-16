@@ -45,7 +45,7 @@ public partial class MainWindow : Window
     {
         if (!string.IsNullOrWhiteSpace(_filePath))
         {
-            await LoadFileAsync(Path.GetFullPath(_filePath));
+            await OpenFileAsync(Path.GetFullPath(_filePath));
         }
     }
 
@@ -73,11 +73,11 @@ public partial class MainWindow : Window
         var file = files.FirstOrDefault();
         if (file is not null)
         {
-            await LoadFileAsync(file.Path.LocalPath);
+            await OpenFileAsync(file.Path.LocalPath);
         }
     }
 
-    private async Task LoadFileAsync(string filePath)
+    public async Task OpenFileAsync(string filePath)
     {
         try
         {

@@ -2,13 +2,14 @@
 
 Una herramienta de escritorio multiplataforma, construida con .NET y Avalonia UI, diseñada para investigadores que necesitan inspeccionar archivos `.mat` sin tener que abrir MATLAB.
 
-> Estado actual: la rama `feature/avalonia-foundation` permite elegir un archivo `.mat` desde la aplicación o abrir el archivo entregado al iniciar; muestra su primera matriz numérica en una tabla de solo lectura. La asociación por doble clic se configurará con los instaladores en una etapa posterior.
+> Estado actual: VisorMat permite elegir un archivo `.mat` desde la aplicación, abrirlo desde la terminal y, en macOS, abrirlo con doble clic desde Finder cuando `VisorMat.app` está instalada.
 
 ## El Problema
 Abrir MATLAB solo para revisar si los datos de un entrenamiento son correctos consume tiempo y memoria RAM. VisorMat resuelve esto permitiendo una inspección instantánea.
 
 ## Características
 - **Apertura Instantánea:** Compilado de forma nativa para Windows (C#/.NET).
+- **Doble clic en macOS:** La app registrada en Aplicaciones recibe archivos `.mat` abiertos desde Finder.
 - **Interoperabilidad:** Permite seleccionar datos y copiarlos (`Cmd/Ctrl + C`) con formato de celdas para pegarlos directamente en Excel.
 - **Visualización Limpia:** Formateo a dos decimales y resaltado de filas para mejorar la legibilidad de matrices grandes.
 - **Vista de 8 columnas:** En matrices de 9 columnas, permite alternar entre la matriz original y una vista que elimina las filas cuyo valor en la columna 9 es `2`, además de quitar esa columna de la vista.
@@ -45,7 +46,7 @@ Para macOS con Apple Silicon:
 dotnet publish -c Release -r osx-arm64 --self-contained true
 ```
 
-Los paquetes de instalación y la asociación por doble clic se crearán después de que la tabla esté migrada.
+La asociación por doble clic en Windows se añadirá junto con un instalador de Windows. En macOS, se configura al instalar `VisorMat.app` desde el DMG.
 
 ## Crear una versión para distribuir
 

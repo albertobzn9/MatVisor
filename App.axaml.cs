@@ -9,7 +9,28 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow(desktop.Args ?? []);
+            var mainWindow = new MainWindow(desktop.Args ?? []);
+            desktop.MainWindow = mainWindow;
+
+            if (TryGetFeature(typeof(IActivatableLifetime)) is IActivatableLifetime activatableLifetime)
+            {
+                activatableLifetime.Activated += async (_, activation) =>
+                {
+                    if (activation is not FileActivatedEventArgs { Kind: ActivationKind.File } fileActivation)
+                    {
+                        return;
+                    }
+
+                    var matFile = fileActivation.Files.FirstOrDefault(file =>
+                        string.Equals(Path.GetExtension(file.Name), ".mat", StringComparison.OrdinalIgnoreCase));
+
+                    if (matFile is not null)
+                    {
+                        await mainWindow.OpenFileAsync(matFile.Path.LocalPath);
+                        mainWindow.Activate();
+                    }
+                };
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
