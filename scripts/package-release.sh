@@ -48,7 +48,7 @@ ditto -c -k --sequesterRsrc --keepParent "$mac_app" "$mac_zip"
 mkdir -p "$dmg_stage"
 ditto "$mac_app" "$dmg_stage/VisorMat.app"
 ln -s /Applications "$dmg_stage/Applications"
-hdiutil create -volname "VisorMat $version" -srcfolder "$dmg_stage" -ov -format UDZO "$mac_dmg"
+hdiutil create -size 256m -volname "VisorMat $version" -srcfolder "$dmg_stage" -ov -format UDZO "$mac_dmg"
 hdiutil verify "$mac_dmg"
 
 dotnet publish "$repository_root/VisorMat.csproj" \
