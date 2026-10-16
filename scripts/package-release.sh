@@ -60,7 +60,7 @@ dotnet publish "$repository_root/VisorMat.csproj" \
   -o "$windows_publish"
 
 cp "$windows_publish/VisorMat.exe" "$windows_exe"
-ditto -c -k --keepParent "$windows_exe" "$windows_zip"
+COPYFILE_DISABLE=1 zip -j -q "$windows_zip" "$windows_exe"
 
 echo "Artefactos creados en: $release_root"
 ls -lh "$mac_dmg" "$mac_zip" "$windows_exe" "$windows_zip"
