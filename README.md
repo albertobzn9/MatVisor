@@ -10,7 +10,8 @@ Abrir MATLAB solo para revisar si los datos de un entrenamiento son correctos co
 ## Características
 - **Apertura Instantánea:** Compilado de forma nativa para Windows (C#/.NET).
 - **Interoperabilidad:** Permite seleccionar datos y copiarlos (`Cmd/Ctrl + C`) con formato de celdas para pegarlos directamente en Excel.
-- **Visualización Limpia:** Formateo automático de decimales y resaltado de filas para mejorar la legibilidad de matrices grandes.
+- **Visualización Limpia:** Formateo a dos decimales y resaltado de filas para mejorar la legibilidad de matrices grandes.
+- **Vista de 8 columnas:** En matrices de 9 columnas, permite alternar entre la matriz original y una vista que elimina las filas cuyo valor en la columna 9 es `2`, además de quitar esa columna de la vista.
 - **Portabilidad:** No requiere MATLAB instalado en la computadora.
 
 ## Instalación
@@ -25,6 +26,8 @@ dotnet run -- /ruta/a/archivo.mat
 ```
 
 Pulsa **Abrir archivo .mat…** y selecciona el archivo, o inicia la aplicación con su ruta. La ventana debe mostrar el nombre y las dimensiones de la primera matriz numérica, además de sus valores en una tabla. Esta versión aún no permite seleccionar otras variables del archivo.
+
+Cuando la matriz tiene exactamente 9 columnas, aparecen los botones **9 columnas** y **8 columnas**. El primero muestra el original. El segundo elimina las filas que tienen `2` en la novena columna, presenta únicamente las primeras ocho columnas y renumera la primera columna sin huecos. En esa vista aparece **Guardar matriz de 8 columnas…**, que crea un nuevo archivo `.mat` con la variable `Resultados`; el archivo original no se modifica.
 
 Para seleccionar varias celdas, haz clic en la primera y arrastra el cursor hasta la última. `Cmd+A` selecciona toda la matriz en macOS y `Ctrl+A` hace lo mismo en Windows; `Cmd+C` o `Ctrl+C` copia el rango seleccionado para pegarlo en Excel.
 

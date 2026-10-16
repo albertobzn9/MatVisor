@@ -270,5 +270,5 @@ internal sealed class MatrixTable : Grid
         return result.ToString();
     }
 
-    private static string FormatValue(double value) => Math.Round(value, 1).ToString(CultureInfo.CurrentCulture);
+    private static string FormatValue(double value) => value.ToString("0.00", CultureInfo.CurrentCulture);
 }
