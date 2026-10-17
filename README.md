@@ -13,6 +13,7 @@ Abrir MATLAB solo para revisar si los datos de un entrenamiento son correctos co
 - **Interoperabilidad:** Permite seleccionar datos y copiarlos (`Cmd/Ctrl + C`) con formato de celdas para pegarlos directamente en Excel.
 - **Visualización Limpia:** Formateo a dos decimales y resaltado de filas para mejorar la legibilidad de matrices grandes.
 - **Vista de 8 columnas:** En matrices de 9 columnas, permite alternar entre la matriz original y una vista que elimina las filas cuyo valor en la columna 9 es `2`, además de quitar esa columna de la vista.
+- **Análisis de grupos:** En matrices de 8 o 9 columnas, genera a la derecha las columnas 9–12: valores de D filtrados por columna 8, separados por C=0 y C=1, con el promedio de sus tres conjuntos.
 - **Portabilidad:** No requiere MATLAB instalado en la computadora; Avalonia UI permite que la misma app funcione en macOS y Windows.
 
 ## Instalación
@@ -31,6 +32,8 @@ Pulsa **Abrir archivo .mat…** y selecciona el archivo, o inicia la aplicación
 Cuando la matriz tiene exactamente 9 columnas, aparecen los botones **9 columnas** y **8 columnas**. El primero muestra el original. El segundo elimina las filas que tienen `2` en la novena columna, presenta únicamente las primeras ocho columnas y renumera la primera columna sin huecos. En esa vista aparece **Guardar matriz de 8 columnas…**, que crea un nuevo archivo `.mat` con la variable `Resultados`; el archivo original no se modifica.
 
 Para seleccionar varias celdas, haz clic en la primera y arrastra el cursor hasta la última. `Cmd+A` selecciona toda la matriz en macOS y `Ctrl+A` hace lo mismo en Windows; `Cmd+C` o `Ctrl+C` copia el rango seleccionado para pegarlo en Excel.
+
+En una matriz de 8 o 9 columnas aparece además **Generar análisis (cols. 9–12)**. Conserva la tabla cargada y abre los resultados en una ventana independiente, que puedes mover o redimensionar para compararla con el original. Ambas ventanas incluyen controles de zoom de 60% a 140%, para reducir las dos tablas y verlas lado a lado. Sólo toma los valores de D (columna 4) de las filas donde la columna 8 sea mayor que `1`; después los separa según C (columna 3) sea `0` o `1`. Cada lista se divide, sin alterar el orden, en tres partes. Si sobran uno o dos valores tras dividir entre tres, se agregan primero al conjunto 1 y luego al conjunto 2. Las columnas 9 y 10 muestran los valores de cada conjunto, su promedio y una separación antes del siguiente conjunto; las columnas 11 y 12 presentan el resumen de esos tres promedios. Un conjunto vacío se presenta como `n/a`.
 
 ## Publicación temporal para comprobar cada sistema
 

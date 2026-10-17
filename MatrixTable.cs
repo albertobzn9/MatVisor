@@ -10,11 +10,17 @@ namespace VisorMat;
 
 internal sealed class MatrixTable : Grid
 {
-    private const double HeaderHeight = 32;
-    private const double RowHeight = 28;
+    private const double BaseHeaderHeight = 32;
+    private const double BaseRowHeight = 28;
     private readonly List<double> _columnWidths = [];
     private Border[,]? _cells;
     private Matrix<double>? _matrix;
+    private int _firstColumnNumber = 1;
+    private IReadOnlyDictionary<(int Row, int Column), string> _displayValues =
+        new Dictionary<(int Row, int Column), string>();
+    private IReadOnlySet<(int Row, int Column)> _boldCells =
+        new HashSet<(int Row, int Column)>();
+    private double _zoomFactor = 1;
     private (int Row, int Column)? _anchor;
     private (int Row, int Column)? _selectionEnd;
 
@@ -28,9 +34,16 @@ internal sealed class MatrixTable : Grid
         KeyDown += OnKeyDown;
     }
 
-    public void Display(Matrix<double> matrix)
+    public void Display(
+        Matrix<double> matrix,
+        int firstColumnNumber = 1,
+        IReadOnlyDictionary<(int Row, int Column), string>? displayValues = null,
+        IReadOnlySet<(int Row, int Column)>? boldCells = null)
     {
         _matrix = matrix;
+        _firstColumnNumber = firstColumnNumber;
+        _displayValues = displayValues ?? new Dictionary<(int Row, int Column), string>();
+        _boldCells = boldCells ?? new HashSet<(int Row, int Column)>();
         _anchor = null;
         _selectionEnd = null;
         _columnWidths.Clear();
@@ -59,16 +72,35 @@ internal sealed class MatrixTable : Grid
         }
     }
 
+    public int ZoomPercent => (int)Math.Round(_zoomFactor * 100);
+
+    public void ZoomOut() => ChangeZoom(-0.1);
+
+    public void ZoomIn() => ChangeZoom(0.1);
+
+    public void ResetZoom()
+    {
+        if (_zoomFactor != 1)
+        {
+            _zoomFactor = 1;
+            RefreshDisplay();
+        }
+    }
+
+    private double HeaderHeight => BaseHeaderHeight * _zoomFactor;
+
+    private double RowHeight => BaseRowHeight * _zoomFactor;
+
     private double CalculateColumnWidth(Matrix<double> matrix, int column)
     {
-        var longestText = $"Col {column + 1}".Length;
+        var longestText = $"Col {column + _firstColumnNumber}".Length;
 
         for (var row = 0; row < matrix.RowCount; row++)
         {
-            longestText = Math.Max(longestText, FormatValue(matrix[row, column]).Length);
+            longestText = Math.Max(longestText, GetDisplayValue(row, column).Length);
         }
 
-        return Math.Clamp((longestText * 9) + 28, 92, 240);
+        return Math.Clamp(((longestText * 9) + 28) * _zoomFactor, 56, 240);
     }
 
     private void AddHeader(int column)
@@ -81,9 +113,10 @@ internal sealed class MatrixTable : Grid
             Child = new TextBlock
             {
                 FontWeight = FontWeight.SemiBold,
+                FontSize = 14 * _zoomFactor,
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                Text = $"Col {column + 1}"
+                Text = $"Col {column + _firstColumnNumber}"
             }
         };
 
@@ -103,8 +136,10 @@ internal sealed class MatrixTable : Grid
             {
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                Text = FormatValue(matrix[row, column]),
-                TextTrimming = TextTrimming.CharacterEllipsis
+                Text = GetDisplayValue(row, column),
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                FontWeight = _boldCells.Contains((row, column)) ? FontWeight.Bold : FontWeight.Normal,
+                FontSize = 14 * _zoomFactor
             }
         };
 
@@ -263,12 +298,37 @@ internal sealed class MatrixTable : Grid
                     result.Append('\t');
                 }
 
-                result.Append(FormatValue(_matrix![row, column]));
+                result.Append(GetDisplayValue(row, column));
             }
         }
 
         return result.ToString();
     }
 
-    private static string FormatValue(double value) => value.ToString("0.00", CultureInfo.CurrentCulture);
+    private string GetDisplayValue(int row, int column) =>
+        _displayValues.TryGetValue((row, column), out var displayValue)
+            ? displayValue
+            : FormatValue(_matrix![row, column]);
+
+    private void ChangeZoom(double change)
+    {
+        var newZoom = Math.Clamp(Math.Round(_zoomFactor + change, 1), 0.6, 1.4);
+        if (newZoom != _zoomFactor)
+        {
+            _zoomFactor = newZoom;
+            RefreshDisplay();
+        }
+    }
+
+    private void RefreshDisplay()
+    {
+        if (_matrix is not null)
+        {
+            Display(_matrix, _firstColumnNumber, _displayValues, _boldCells);
+        }
+    }
+
+    private static string FormatValue(double value) => double.IsNaN(value)
+        ? string.Empty
+        : value.ToString("0.00", CultureInfo.CurrentCulture);
 }

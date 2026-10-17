@@ -12,6 +12,8 @@ public partial class MainWindow : Window
     private readonly string? _filePath;
     private Matrix<double>? _originalMatrix;
     private Matrix<double>? _eightColumnMatrix;
+    private Matrix<double>? _displayedMatrix;
+    private AnalysisWindow? _analysisWindow;
     private string? _loadedFilePath;
 
     public MainWindow()
@@ -104,9 +106,13 @@ public partial class MainWindow : Window
     {
         _originalMatrix = matrix;
         _eightColumnMatrix = null;
+        _displayedMatrix = null;
         _loadedFilePath = filePath;
         ColumnModePanel.IsVisible = matrix.ColumnCount == 9;
+        GenerateAnalysisButton.IsVisible = matrix.ColumnCount is 8 or 9;
+        ZoomPanel.IsVisible = true;
         SaveEightColumnsButton.IsVisible = false;
+        CloseAnalysisWindow();
         ShowNineColumns();
         Title = $"VisorMat — {Path.GetFileName(filePath)}";
         MatrixPanel.IsVisible = true;
@@ -143,6 +149,53 @@ public partial class MainWindow : Window
             _originalMatrix,
             $"{_originalMatrix.ColumnCount} columnas (original)",
             "Matriz original cargada. Arrastra sobre las celdas para seleccionar un rango; usa Ctrl+C o ⌘C para copiarlo.");
+    }
+
+    private void GenerateAnalysis_Click(object? sender, RoutedEventArgs eventArgs)
+    {
+        if (_displayedMatrix is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var analysis = MatrixAnalysisBuilder.Create(_displayedMatrix);
+            CloseAnalysisWindow();
+            var analysisWindow = new AnalysisWindow(analysis, _loadedFilePath ?? string.Empty);
+            _analysisWindow = analysisWindow;
+            analysisWindow.Closed += (_, _) =>
+            {
+                if (ReferenceEquals(_analysisWindow, analysisWindow))
+                {
+                    _analysisWindow = null;
+                }
+            };
+            analysisWindow.Show(this);
+            StatusText.Text = $"Análisis generado en una ventana independiente: {analysis.CeroCount} valores con C=0 y {analysis.UnoCount} valores con C=1.";
+        }
+        catch (Exception exception)
+        {
+            StatusText.Text = $"No se pudo generar el análisis: {exception.Message}";
+        }
+    }
+
+    private void ZoomOut_Click(object? sender, RoutedEventArgs eventArgs)
+    {
+        MatrixTable.ZoomOut();
+        UpdateZoomText();
+    }
+
+    private void ZoomIn_Click(object? sender, RoutedEventArgs eventArgs)
+    {
+        MatrixTable.ZoomIn();
+        UpdateZoomText();
+    }
+
+    private void ResetZoom_Click(object? sender, RoutedEventArgs eventArgs)
+    {
+        MatrixTable.ResetZoom();
+        UpdateZoomText();
     }
 
     private async void SaveEightColumns_Click(object? sender, RoutedEventArgs eventArgs)
@@ -199,9 +252,20 @@ public partial class MainWindow : Window
 
     private void DisplayMatrix(Matrix<double> matrix, string viewName, string status)
     {
+        _displayedMatrix = matrix;
+        CloseAnalysisWindow();
         MatrixTable.Display(matrix);
+        UpdateZoomText();
         MatrixTitleText.Text = $"Nombre: {Path.GetFileNameWithoutExtension(_loadedFilePath)} | Tamaño: ({matrix.RowCount}, {matrix.ColumnCount})";
         ColumnModeText.Text = $"Vista actual: {viewName}";
         StatusText.Text = status;
+    }
+
+    private void UpdateZoomText() => ZoomText.Text = $"{MatrixTable.ZoomPercent}%";
+
+    private void CloseAnalysisWindow()
+    {
+        _analysisWindow?.Close();
+        _analysisWindow = null;
     }
 }

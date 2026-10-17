@@ -50,25 +50,32 @@
             BorderBrush="{DynamicResource SystemControlHighlightAltAccentBrush}"
             BorderThickness="1"
             CornerRadius="8">
-      <Grid RowDefinitions="Auto,Auto,*">
+      <Grid RowDefinitions="Auto,Auto,*,Auto">
         <TextBlock x:Name="MatrixTitleText"
                    Margin="0,0,0,12"
                    FontSize="16"
                    FontWeight="SemiBold" />
-        <StackPanel x:Name="ColumnModePanel"
-                    Grid.Row="1"
+        <StackPanel Grid.Row="1"
                     Margin="0,0,0,12"
-                    IsVisible="False"
                     Orientation="Horizontal"
                     Spacing="8">
-          <TextBlock x:Name="ColumnModeText"
-                     VerticalAlignment="Center"
-                     Text="Vista actual:" />
-          <Button Click="ShowNineColumns_Click" Content="9 columnas" />
-          <Button Click="ShowEightColumns_Click" Content="8 columnas" />
-          <Button x:Name="SaveEightColumnsButton"
-                  Click="SaveEightColumns_Click"
-                  Content="Guardar matriz de 8 columnas…"
+          <StackPanel x:Name="ColumnModePanel"
+                      IsVisible="False"
+                      Orientation="Horizontal"
+                      Spacing="8">
+            <TextBlock x:Name="ColumnModeText"
+                       VerticalAlignment="Center"
+                       Text="Vista actual:" />
+            <Button Click="ShowNineColumns_Click" Content="9 columnas" />
+            <Button Click="ShowEightColumns_Click" Content="8 columnas" />
+            <Button x:Name="SaveEightColumnsButton"
+                    Click="SaveEightColumns_Click"
+                    Content="Guardar matriz de 8 columnas…"
+                    IsVisible="False" />
+          </StackPanel>
+          <Button x:Name="GenerateAnalysisButton"
+                  Click="GenerateAnalysis_Click"
+                  Content="Generar análisis (cols. 9–12)"
                   IsVisible="False" />
         </StackPanel>
         <ScrollViewer Grid.Row="2"
@@ -76,6 +83,20 @@
                       VerticalScrollBarVisibility="Auto">
           <local:MatrixTable x:Name="MatrixTable" />
         </ScrollViewer>
+        <StackPanel x:Name="ZoomPanel"
+                    Grid.Row="3"
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Left"
+                    IsVisible="False"
+                    Orientation="Horizontal"
+                    Spacing="4">
+          <Button Click="ZoomOut_Click" Content="− Zoom" />
+          <TextBlock x:Name="ZoomText"
+                     VerticalAlignment="Center"
+                     Text="100%" />
+          <Button Click="ZoomIn_Click" Content="+ Zoom" />
+          <Button Click="ResetZoom_Click" Content="Restablecer" />
+        </StackPanel>
       </Grid>
     </Border>
   </Grid>

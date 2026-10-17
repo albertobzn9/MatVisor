@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:VisorMat"
+        x:Class="VisorMat.AnalysisWindow"
+        Title="Resultados del análisis — VisorMat"
+        Icon="/Assets/visormat.ico"
+        Width="620"
+        Height="720"
+        MinWidth="480"
+        MinHeight="420"
+        WindowStartupLocation="CenterOwner">
+  <Grid Margin="24" RowDefinitions="Auto,Auto,*,Auto">
+    <StackPanel Spacing="4">
+      <TextBlock FontSize="24"
+                 FontWeight="SemiBold"
+                 Text="Resultados del análisis" />
+      <TextBlock x:Name="SourceText"
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                 TextWrapping="Wrap" />
+    </StackPanel>
+    <Border Grid.Row="1"
+            Margin="0,16"
+            Padding="12"
+            Background="{DynamicResource SystemControlHighlightAltLowBrush}"
+            BorderBrush="{DynamicResource SystemControlHighlightAltAccentBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+      <TextBlock TextWrapping="Wrap"
+                 Text="Columnas 9 y 10: valores de cada conjunto y su promedio en negritas. Columnas 11 y 12: resumen de los tres promedios." />
+    </Border>
+    <ScrollViewer Grid.Row="2"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto">
+      <local:MatrixTable x:Name="AnalysisTable" />
+    </ScrollViewer>
+    <StackPanel Grid.Row="3"
+                Margin="0,12,0,0"
+                HorizontalAlignment="Left"
+                Orientation="Horizontal"
+                Spacing="6">
+      <Button Click="ZoomOut_Click" Content="− Zoom" />
+      <TextBlock x:Name="ZoomText" VerticalAlignment="Center" Text="100%" />
+      <Button Click="ZoomIn_Click" Content="+ Zoom" />
+      <Button Click="ResetZoom_Click" Content="Restablecer" />
+    </StackPanel>
+  </Grid>
+</Window>
