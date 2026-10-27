@@ -18,6 +18,7 @@ MatVisor opens numeric MATLAB matrices without requiring MATLAB. It is designed 
 - Switch a 9-column matrix to an 8-column view, removing rows where column 9 equals `2` and renumbering column 1.
 - Save the derived 8-column matrix as a compatible `.mat` file.
 - Generate a separate analysis window that splits values into three groups and displays their averages.
+- Switch the application interface between Spanish and English without reloading the matrix.
 - Run on macOS and Windows from self-contained releases.
 
 ## Download

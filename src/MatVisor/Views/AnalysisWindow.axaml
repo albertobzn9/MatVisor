@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="using:MatVisor"
         x:Class="MatVisor.AnalysisWindow"
-        Title="Resultados del análisis — MatVisor"
+        Title="MatVisor"
         Icon="/Assets/matvisor.ico"
         Width="620"
         Height="720"
@@ -11,9 +11,9 @@
         WindowStartupLocation="CenterOwner">
   <Grid Margin="24" RowDefinitions="Auto,Auto,*,Auto">
     <StackPanel Spacing="4">
-      <TextBlock FontSize="24"
-                 FontWeight="SemiBold"
-                 Text="Resultados del análisis" />
+      <TextBlock x:Name="AnalysisTitleText"
+                 FontSize="24"
+                 FontWeight="SemiBold" />
       <TextBlock x:Name="SourceText"
                  Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                  TextWrapping="Wrap" />
@@ -25,8 +25,7 @@
             BorderBrush="{DynamicResource SystemControlHighlightAltAccentBrush}"
             BorderThickness="1"
             CornerRadius="8">
-      <TextBlock TextWrapping="Wrap"
-                 Text="Columnas 9 y 10: valores de cada conjunto y su promedio en negritas. Columnas 11 y 12: resumen de los tres promedios." />
+      <TextBlock x:Name="AnalysisDescriptionText" TextWrapping="Wrap" />
     </Border>
     <ScrollViewer Grid.Row="2"
                   HorizontalScrollBarVisibility="Auto"
@@ -38,10 +37,10 @@
                 HorizontalAlignment="Left"
                 Orientation="Horizontal"
                 Spacing="6">
-      <Button Click="ZoomOut_Click" Content="− Zoom" />
+      <Button x:Name="ZoomOutButton" Click="ZoomOut_Click" />
       <TextBlock x:Name="ZoomText" VerticalAlignment="Center" Text="100%" />
-      <Button Click="ZoomIn_Click" Content="+ Zoom" />
-      <Button Click="ResetZoom_Click" Content="Restablecer" />
+      <Button x:Name="ZoomInButton" Click="ZoomIn_Click" />
+      <Button x:Name="ResetZoomButton" Click="ResetZoom_Click" />
     </StackPanel>
   </Grid>
 </Window>

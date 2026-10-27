@@ -1,4 +1,5 @@
 using MathNet.Numerics.LinearAlgebra;
+using Avalonia;
 
 namespace MatVisor;
 
@@ -8,7 +9,9 @@ internal static class MatrixTransformer
     {
         if (originalMatrix.ColumnCount != 9)
         {
-            throw new ArgumentException("La conversión a 8 columnas requiere una matriz de exactamente 9 columnas.", nameof(originalMatrix));
+            throw new ArgumentException(
+                ((App)Application.Current!).Localizer.Get(UiText.ConversionRequiresNineColumns),
+                nameof(originalMatrix));
         }
 
         var remainingRows = new List<int>();

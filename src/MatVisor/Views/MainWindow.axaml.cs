@@ -1,5 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using MathNet.Numerics.Data.Matlab;
 using MathNet.Numerics.LinearAlgebra;
@@ -10,11 +12,15 @@ namespace MatVisor;
 public partial class MainWindow : Window
 {
     private readonly string? _filePath;
+    private readonly AppLocalizer _localizer;
     private Matrix<double>? _originalMatrix;
     private Matrix<double>? _eightColumnMatrix;
     private Matrix<double>? _displayedMatrix;
     private AnalysisWindow? _analysisWindow;
     private string? _loadedFilePath;
+    private int _removedRowCount;
+    private MatrixView _matrixView = MatrixView.Original;
+    private bool _applyingLanguage;
 
     public MainWindow()
         : this([])
@@ -24,22 +30,77 @@ public partial class MainWindow : Window
     public MainWindow(string[] launchArguments)
     {
         InitializeComponent();
+        _localizer = ((App)Application.Current!).Localizer;
         _filePath = launchArguments.FirstOrDefault(argument => !argument.StartsWith("-", StringComparison.Ordinal));
+        _localizer.LanguageChanged += Localizer_LanguageChanged;
         Opened += async (_, _) => await LoadLaunchFileAsync();
+        Closed += (_, _) => _localizer.LanguageChanged -= Localizer_LanguageChanged;
+        ApplyLocalizedText();
         ShowInitialStatus();
+    }
+
+    private void Localizer_LanguageChanged(object? sender, EventArgs eventArgs) => ApplyLocalizedText();
+
+    private void ApplyLocalizedText()
+    {
+        OpenFileButton.Content = _localizer.Get(UiText.OpenFile);
+        SubtitleText.Text = _localizer.Get(UiText.Subtitle);
+        FileLabelText.Text = _localizer.Get(UiText.File);
+        ShowNineColumnsButton.Content = _localizer.Get(UiText.NineColumns);
+        ShowEightColumnsButton.Content = _localizer.Get(UiText.EightColumns);
+        SaveEightColumnsButton.Content = _localizer.Get(UiText.SaveEightColumns);
+        GenerateAnalysisButton.Content = _localizer.Get(UiText.GenerateAnalysis);
+        ZoomOutButton.Content = _localizer.Get(UiText.ZoomOut);
+        ZoomInButton.Content = _localizer.Get(UiText.ZoomIn);
+        ResetZoomButton.Content = _localizer.Get(UiText.ResetZoom);
+
+        _applyingLanguage = true;
+        LanguageToggleButton.IsChecked = _localizer.CurrentLanguage == AppLanguage.English;
+        _applyingLanguage = false;
+        UpdateLanguageToggleAppearance();
+        MatrixTable.SetColumnHeaderPrefix(_localizer.Get(UiText.ColumnPrefix));
+
+        if (_displayedMatrix is null)
+        {
+            ShowInitialStatus();
+            return;
+        }
+
+        UpdateWindowTitle();
+        UpdateDisplayedMatrixText();
+    }
+
+    private void LanguageToggleButton_IsCheckedChanged(object? sender, RoutedEventArgs eventArgs)
+    {
+        if (!_applyingLanguage)
+        {
+            _localizer.SetLanguage(LanguageToggleButton.IsChecked == true
+                ? AppLanguage.English
+                : AppLanguage.Spanish);
+        }
+    }
+
+    private void UpdateLanguageToggleAppearance()
+    {
+        var englishSelected = _localizer.CurrentLanguage == AppLanguage.English;
+        SpanishLanguageText.FontWeight = englishSelected ? FontWeight.Normal : FontWeight.Bold;
+        EnglishLanguageText.FontWeight = englishSelected ? FontWeight.Bold : FontWeight.Normal;
+        SpanishLanguageText.Foreground = new SolidColorBrush(Color.Parse(englishSelected ? "#6B7280" : "#0F6CBD"));
+        EnglishLanguageText.Foreground = new SolidColorBrush(Color.Parse(englishSelected ? "#0F6CBD" : "#6B7280"));
     }
 
     private void ShowInitialStatus()
     {
         if (string.IsNullOrWhiteSpace(_filePath))
         {
-            FilePathText.Text = "Elige un archivo .mat para comenzar.";
-            StatusText.Text = "También puedes iniciar MatVisor entregándole la ruta de un archivo .mat.";
+            FilePathText.Text = _localizer.Get(UiText.InitialFilePrompt);
+            StatusText.Text = _localizer.Get(UiText.InitialStatus);
+            Title = "MatVisor";
             return;
         }
 
         FilePathText.Text = Path.GetFullPath(_filePath);
-        StatusText.Text = "Preparando la lectura del archivo…";
+        StatusText.Text = _localizer.Get(UiText.PreparingFile);
         Title = $"MatVisor — {Path.GetFileName(_filePath)}";
     }
 
@@ -55,17 +116,17 @@ public partial class MainWindow : Window
     {
         if (!StorageProvider.CanOpen)
         {
-            StatusText.Text = "Este sistema no permite abrir el selector de archivos.";
+            StatusText.Text = _localizer.Get(UiText.CannotOpenPicker);
             return;
         }
 
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Abrir archivo MATLAB",
+            Title = _localizer.Get(UiText.OpenPickerTitle),
             AllowMultiple = false,
             FileTypeFilter =
             [
-                new FilePickerFileType("Archivo MATLAB")
+                new FilePickerFileType(_localizer.Get(UiText.MatFile))
                 {
                     Patterns = ["*.mat"]
                 }
@@ -88,17 +149,17 @@ public partial class MainWindow : Window
 
             if (!File.Exists(fullPath))
             {
-                throw new FileNotFoundException("No existe el archivo indicado.", fullPath);
+                throw new FileNotFoundException(_localizer.Get(UiText.FileNotFound), fullPath);
             }
 
-            StatusText.Text = "Leyendo la primera matriz numérica…";
+            StatusText.Text = _localizer.Get(UiText.ReadingMatrix);
             var matrix = await Task.Run(() => MatFileLoader.LoadFirstNumericMatrix(fullPath));
             ShowMatrix(matrix, fullPath);
         }
         catch (Exception exception)
         {
             MatrixPanel.IsVisible = false;
-            StatusText.Text = $"No se pudo abrir el archivo: {exception.Message}";
+            StatusText.Text = _localizer.Format(UiText.OpenFileFailed, exception.Message);
         }
     }
 
@@ -108,13 +169,15 @@ public partial class MainWindow : Window
         _eightColumnMatrix = null;
         _displayedMatrix = null;
         _loadedFilePath = filePath;
+        _removedRowCount = 0;
+        _matrixView = MatrixView.Original;
         ColumnModePanel.IsVisible = matrix.ColumnCount == 9;
         GenerateAnalysisButton.IsVisible = matrix.ColumnCount is 8 or 9;
         ZoomPanel.IsVisible = true;
         SaveEightColumnsButton.IsVisible = false;
         CloseAnalysisWindow();
         ShowNineColumns();
-        Title = $"MatVisor — {Path.GetFileName(filePath)}";
+        UpdateWindowTitle();
         MatrixPanel.IsVisible = true;
     }
 
@@ -127,14 +190,10 @@ public partial class MainWindow : Window
             return;
         }
 
-        var eightColumnMatrix = MatrixTransformer.CreateEightColumnView(_originalMatrix, out var removedRowCount);
-        _eightColumnMatrix = eightColumnMatrix;
+        _eightColumnMatrix = MatrixTransformer.CreateEightColumnView(_originalMatrix, out _removedRowCount);
+        _matrixView = MatrixView.EightColumns;
         SaveEightColumnsButton.IsVisible = true;
-
-        DisplayMatrix(
-            eightColumnMatrix,
-            "8 columnas",
-            $"Vista de 8 columnas: se quitaron {removedRowCount} filas cuyo valor en la columna 9 es 2 y la columna 1 fue renumerada. La matriz original no fue modificada.");
+        DisplayMatrix(_eightColumnMatrix);
     }
 
     private void ShowNineColumns()
@@ -144,11 +203,9 @@ public partial class MainWindow : Window
             return;
         }
 
+        _matrixView = MatrixView.Original;
         SaveEightColumnsButton.IsVisible = false;
-        DisplayMatrix(
-            _originalMatrix,
-            $"{_originalMatrix.ColumnCount} columnas (original)",
-            "Matriz original cargada. Arrastra sobre las celdas para seleccionar un rango; usa Ctrl+C o ⌘C para copiarlo.");
+        DisplayMatrix(_originalMatrix);
     }
 
     private void GenerateAnalysis_Click(object? sender, RoutedEventArgs eventArgs)
@@ -172,11 +229,11 @@ public partial class MainWindow : Window
                 }
             };
             analysisWindow.Show(this);
-            StatusText.Text = $"Análisis generado en una ventana independiente: {analysis.CeroCount} valores con C=0 y {analysis.UnoCount} valores con C=1.";
+            StatusText.Text = _localizer.Format(UiText.AnalysisCreated, analysis.CeroCount, analysis.UnoCount);
         }
         catch (Exception exception)
         {
-            StatusText.Text = $"No se pudo generar el análisis: {exception.Message}";
+            StatusText.Text = _localizer.Format(UiText.AnalysisFailed, exception.Message);
         }
     }
 
@@ -207,18 +264,18 @@ public partial class MainWindow : Window
 
         if (!StorageProvider.CanSave)
         {
-            StatusText.Text = "Este sistema no permite elegir dónde guardar el archivo.";
+            StatusText.Text = _localizer.Get(UiText.CannotSavePicker);
             return;
         }
 
         var destination = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Guardar matriz de 8 columnas",
-            SuggestedFileName = $"{Path.GetFileNameWithoutExtension(_loadedFilePath)}_8col.mat",
+            Title = _localizer.Get(UiText.SavePickerTitle),
+            SuggestedFileName = $"{Path.GetFileNameWithoutExtension(_loadedFilePath)}{_localizer.Get(UiText.SaveSuggestedSuffix)}",
             DefaultExtension = "mat",
             FileTypeChoices =
             [
-                new FilePickerFileType("Archivo MATLAB")
+                new FilePickerFileType(_localizer.Get(UiText.MatFile))
                 {
                     Patterns = ["*.mat"]
                 }
@@ -233,32 +290,61 @@ public partial class MainWindow : Window
 
         if (string.Equals(destination.Path.LocalPath, _loadedFilePath, StringComparison.OrdinalIgnoreCase))
         {
-            StatusText.Text = "Elige un nombre distinto para conservar el archivo original.";
+            StatusText.Text = _localizer.Get(UiText.ChooseDifferentFile);
             return;
         }
 
         try
         {
-            StatusText.Text = "Guardando la matriz de 8 columnas…";
+            StatusText.Text = _localizer.Get(UiText.SavingEightColumns);
             await using var stream = await destination.OpenWriteAsync();
             await Task.Run(() => MatlabWriter.Write(stream, _eightColumnMatrix, "Resultados"));
-            StatusText.Text = $"Matriz de 8 columnas guardada como {destination.Name}.";
+            StatusText.Text = _localizer.Format(UiText.EightColumnsSaved, destination.Name);
         }
         catch (Exception exception)
         {
-            StatusText.Text = $"No se pudo guardar la matriz: {exception.Message}";
+            StatusText.Text = _localizer.Format(UiText.SaveFailed, exception.Message);
         }
     }
 
-    private void DisplayMatrix(Matrix<double> matrix, string viewName, string status)
+    private void DisplayMatrix(Matrix<double> matrix)
     {
         _displayedMatrix = matrix;
         CloseAnalysisWindow();
         MatrixTable.Display(matrix);
         UpdateZoomText();
-        MatrixTitleText.Text = $"Nombre: {Path.GetFileNameWithoutExtension(_loadedFilePath)} | Tamaño: ({matrix.RowCount}, {matrix.ColumnCount})";
-        ColumnModeText.Text = $"Vista actual: {viewName}";
-        StatusText.Text = status;
+        UpdateDisplayedMatrixText();
+    }
+
+    private void UpdateDisplayedMatrixText()
+    {
+        if (_displayedMatrix is null)
+        {
+            return;
+        }
+
+        MatrixTitleText.Text = _localizer.Format(
+            UiText.MatrixTitle,
+            Path.GetFileNameWithoutExtension(_loadedFilePath) ?? string.Empty,
+            _displayedMatrix.RowCount,
+            _displayedMatrix.ColumnCount);
+        ColumnModeText.Text = _localizer.Format(UiText.CurrentView, GetViewName());
+        StatusText.Text = GetMatrixStatus();
+    }
+
+    private string GetViewName() => _matrixView == MatrixView.Original
+        ? _localizer.Format(UiText.OriginalView, _originalMatrix?.ColumnCount ?? 0)
+        : _localizer.Get(UiText.EightColumnView);
+
+    private string GetMatrixStatus() => _matrixView == MatrixView.Original
+        ? _localizer.Get(UiText.OriginalMatrixStatus)
+        : _localizer.Format(UiText.EightColumnStatus, _removedRowCount);
+
+    private void UpdateWindowTitle()
+    {
+        Title = string.IsNullOrWhiteSpace(_loadedFilePath)
+            ? "MatVisor"
+            : $"MatVisor — {Path.GetFileName(_loadedFilePath)}";
     }
 
     private void UpdateZoomText() => ZoomText.Text = $"{MatrixTable.ZoomPercent}%";
@@ -267,5 +353,11 @@ public partial class MainWindow : Window
     {
         _analysisWindow?.Close();
         _analysisWindow = null;
+    }
+
+    private enum MatrixView
+    {
+        Original,
+        EightColumns
     }
 }

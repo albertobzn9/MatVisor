@@ -18,6 +18,7 @@ This folder records the current design so a new contributor can navigate and ext
 | `src/MatVisor/Models/MatrixAnalysis.cs` | Data returned by the grouped-analysis calculation. |
 | `src/MatVisor/Services/MatFileLoader.cs` | Reads the first supported two-dimensional numeric matrix in a `.mat` file. |
 | `src/MatVisor/Services/MatrixTransformer.cs` | Produces the derived 8-column view. |
+| `src/MatVisor/Services/AppLocalizer.cs` | Central Spanish/English interface text and the shared language state. |
 | `src/MatVisor/Assets/` | Application and package icons. |
 | `packaging/macos/Info.plist` | macOS bundle metadata and `.mat` document association. |
 | `scripts/package-release.sh` | Builds self-contained macOS and Windows distributables from macOS. |
@@ -52,4 +53,5 @@ The macOS package uses `CFBundleDocumentTypes` in `packaging/macos/Info.plist` t
 
 - Keep processing logic independent from Avalonia controls when adding new transformations or analyses.
 - Do not alter the source `.mat` file during conversion; derived matrices must be saved to a user-selected destination.
+- Add any new user-visible text to `AppLocalizer` in both languages instead of hard-coding it in a view.
 - Update this document when a user-visible rule, file format assumption, or package behavior changes.

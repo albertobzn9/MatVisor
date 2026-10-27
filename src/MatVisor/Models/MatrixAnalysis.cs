@@ -1,4 +1,5 @@
 using MathNet.Numerics.LinearAlgebra;
+using Avalonia;
 
 namespace MatVisor;
 
@@ -17,7 +18,7 @@ internal static class MatrixAnalysisBuilder
     {
         if (source.ColumnCount is not (8 or 9))
         {
-            throw new ArgumentException("El análisis requiere una matriz de 8 o 9 columnas.", nameof(source));
+            throw new ArgumentException(((App)Application.Current!).Localizer.Get(UiText.AnalysisRequiresEightOrNineColumns), nameof(source));
         }
 
         var valuesWithCero = new List<double>();

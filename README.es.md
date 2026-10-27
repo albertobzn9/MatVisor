@@ -18,6 +18,7 @@ MatVisor abre matrices numéricas de MATLAB sin requerir MATLAB. Está pensado p
 - Convierte una vista de 9 columnas a 8 columnas: elimina las filas cuya columna 9 es `2` y vuelve a numerar la columna 1.
 - Guarda la matriz derivada de 8 columnas como un archivo `.mat` compatible.
 - Genera una ventana independiente que divide los valores en tres conjuntos y muestra sus promedios.
+- Cambia la interfaz entre español e inglés sin volver a cargar la matriz.
 - Funciona en macOS y Windows mediante lanzamientos autocontenidos.
 
 ## Descarga

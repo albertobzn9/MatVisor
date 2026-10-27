@@ -1,10 +1,19 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
 
 namespace MatVisor;
 
 public partial class App : Application
 {
+    internal AppLocalizer Localizer { get; }
+
+    public App()
+    {
+        Localizer = new AppLocalizer();
+        AvaloniaXamlLoader.Load(this);
+    }
+
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

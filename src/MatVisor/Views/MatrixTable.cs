@@ -21,6 +21,7 @@ internal sealed class MatrixTable : Grid
     private IReadOnlySet<(int Row, int Column)> _boldCells =
         new HashSet<(int Row, int Column)>();
     private double _zoomFactor = 1;
+    private string _columnHeaderPrefix = "Col";
     private (int Row, int Column)? _anchor;
     private (int Row, int Column)? _selectionEnd;
 
@@ -74,6 +75,17 @@ internal sealed class MatrixTable : Grid
 
     public int ZoomPercent => (int)Math.Round(_zoomFactor * 100);
 
+    public void SetColumnHeaderPrefix(string prefix)
+    {
+        if (string.Equals(_columnHeaderPrefix, prefix, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _columnHeaderPrefix = prefix;
+        RefreshDisplay();
+    }
+
     public void ZoomOut() => ChangeZoom(-0.1);
 
     public void ZoomIn() => ChangeZoom(0.1);
@@ -93,7 +105,7 @@ internal sealed class MatrixTable : Grid
 
     private double CalculateColumnWidth(Matrix<double> matrix, int column)
     {
-        var longestText = $"Col {column + _firstColumnNumber}".Length;
+        var longestText = $"{_columnHeaderPrefix} {column + _firstColumnNumber}".Length;
 
         for (var row = 0; row < matrix.RowCount; row++)
         {
@@ -116,7 +128,7 @@ internal sealed class MatrixTable : Grid
                 FontSize = 14 * _zoomFactor,
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                Text = $"Col {column + _firstColumnNumber}"
+                Text = $"{_columnHeaderPrefix} {column + _firstColumnNumber}"
             }
         };
 

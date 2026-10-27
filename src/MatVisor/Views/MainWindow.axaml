@@ -11,18 +11,28 @@
         WindowStartupLocation="CenterScreen">
   <Grid Margin="24" RowDefinitions="Auto,Auto,Auto,*">
     <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
-      <TextBlock FontSize="28"
-                 FontWeight="SemiBold"
-                 Text="MatVisor" />
-      <Button Grid.Column="1"
-              Padding="14,8"
-              Click="OpenFileButton_Click"
-              Content="Abrir archivo .mat…" />
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <TextBlock FontSize="28"
+                   FontWeight="SemiBold"
+                   Text="MatVisor" />
+        <Button x:Name="OpenFileButton"
+                Padding="14,8"
+                Click="OpenFileButton_Click" />
+      </StackPanel>
+      <ToggleButton x:Name="LanguageToggleButton"
+                    Grid.Column="1"
+                    Padding="12,8"
+                    IsCheckedChanged="LanguageToggleButton_IsCheckedChanged">
+        <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="10">
+          <TextBlock x:Name="SpanishLanguageText" Text="Español" />
+          <TextBlock x:Name="EnglishLanguageText" Grid.Column="1" Text="English" />
+        </Grid>
+      </ToggleButton>
     </Grid>
-    <TextBlock Grid.Row="1"
+    <TextBlock x:Name="SubtitleText"
+               Grid.Row="1"
                Margin="0,6,0,20"
-               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-               Text="Inspección rápida de matrices MATLAB, sin abrir MATLAB" />
+               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
 
     <Border Grid.Row="2"
             Padding="16"
@@ -31,7 +41,7 @@
             BorderThickness="1"
             CornerRadius="8">
       <StackPanel Spacing="8">
-        <TextBlock FontWeight="SemiBold" Text="Archivo" />
+        <TextBlock x:Name="FileLabelText" FontWeight="SemiBold" />
         <TextBlock x:Name="FilePathText"
                    FontFamily="Consolas, Menlo, monospace"
                    TextWrapping="Wrap" />
@@ -65,17 +75,15 @@
                       Spacing="8">
             <TextBlock x:Name="ColumnModeText"
                        VerticalAlignment="Center"
-                       Text="Vista actual:" />
-            <Button Click="ShowNineColumns_Click" Content="9 columnas" />
-            <Button Click="ShowEightColumns_Click" Content="8 columnas" />
+                       Text="" />
+            <Button x:Name="ShowNineColumnsButton" Click="ShowNineColumns_Click" />
+            <Button x:Name="ShowEightColumnsButton" Click="ShowEightColumns_Click" />
             <Button x:Name="SaveEightColumnsButton"
                     Click="SaveEightColumns_Click"
-                    Content="Guardar matriz de 8 columnas…"
                     IsVisible="False" />
           </StackPanel>
           <Button x:Name="GenerateAnalysisButton"
                   Click="GenerateAnalysis_Click"
-                  Content="Generar análisis (cols. 9–12)"
                   IsVisible="False" />
         </StackPanel>
         <ScrollViewer Grid.Row="2"
@@ -90,12 +98,12 @@
                     IsVisible="False"
                     Orientation="Horizontal"
                     Spacing="4">
-          <Button Click="ZoomOut_Click" Content="− Zoom" />
+          <Button x:Name="ZoomOutButton" Click="ZoomOut_Click" />
           <TextBlock x:Name="ZoomText"
                      VerticalAlignment="Center"
                      Text="100%" />
-          <Button Click="ZoomIn_Click" Content="+ Zoom" />
-          <Button Click="ResetZoom_Click" Content="Restablecer" />
+          <Button x:Name="ZoomInButton" Click="ZoomIn_Click" />
+          <Button x:Name="ResetZoomButton" Click="ResetZoom_Click" />
         </StackPanel>
       </Grid>
     </Border>

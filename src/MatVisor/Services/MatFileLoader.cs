@@ -1,5 +1,6 @@
 using MathNet.Numerics.Data.Matlab;
 using MathNet.Numerics.LinearAlgebra;
+using Avalonia;
 using System.IO;
 
 namespace MatVisor;
@@ -29,6 +30,6 @@ internal static class MatFileLoader
             }
         }
 
-        throw new InvalidDataException("No se encontró una matriz numérica bidimensional válida en el archivo.");
+        throw new InvalidDataException(((App)Application.Current!).Localizer.Get(UiText.NoValidMatrix));
     }
 }
