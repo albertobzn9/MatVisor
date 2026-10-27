@@ -146,7 +146,7 @@ internal sealed class AppLocalizer
         [UiText.NoValidMatrix] = "No valid two-dimensional numeric matrix was found in the file."
     };
 
-    public AppLanguage CurrentLanguage { get; private set; } = AppLanguage.Spanish;
+    public AppLanguage CurrentLanguage { get; private set; } = AppLanguage.English;
 
     public event EventHandler? LanguageChanged;
 
