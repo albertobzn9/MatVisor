@@ -1,6 +1,6 @@
 using Avalonia;
 
-namespace VisorMat;
+namespace MatVisor;
 
 internal static class Program
 {

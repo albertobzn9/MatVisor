@@ -1,6 +1,6 @@
 using MathNet.Numerics.LinearAlgebra;
 
-namespace VisorMat;
+namespace MatVisor;
 
 internal static class MatrixTransformer
 {

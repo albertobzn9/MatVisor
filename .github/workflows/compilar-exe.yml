@@ -1,28 +1,28 @@
-name: Compilar y Subir EXE
+name: Build Windows executable
 
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Permite ejecutar este proceso manualmente desde GitHub
+  workflow_dispatch: # Allows a manual run from GitHub
 
 jobs:
   build:
-    runs-on: windows-latest # Utilizamos una computadora con Windows en la nube
+    runs-on: windows-latest # Build on a hosted Windows runner
 
     steps:
-    - name: Descargar el código
+    - name: Check out source
       uses: actions/checkout@v4
 
-    - name: Configurar .NET 10
+    - name: Set up .NET 10
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
 
-    - name: Compilar el proyecto
-      run: dotnet publish VisorMat.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o out
+    - name: Publish the project
+      run: dotnet publish src/MatVisor/MatVisor.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o out
 
-    - name: Guardar el archivo .exe generado
+    - name: Upload the generated executable
       uses: actions/upload-artifact@v4
       with:
-        name: VisorMat-Windows-EXE
-        path: out/VisorMat.exe
+        name: MatVisor-Windows-EXE
+        path: out/MatVisor.exe

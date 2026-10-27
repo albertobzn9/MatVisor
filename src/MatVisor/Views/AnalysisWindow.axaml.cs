@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using System.IO;
 
-namespace VisorMat;
+namespace MatVisor;
 
 internal partial class AnalysisWindow : Window
 {

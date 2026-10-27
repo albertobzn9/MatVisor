@@ -1,6 +1,6 @@
 using MathNet.Numerics.LinearAlgebra;
 
-namespace VisorMat;
+namespace MatVisor;
 
 internal sealed record MatrixAnalysis(
     Matrix<double> DisplayMatrix,

@@ -5,7 +5,7 @@ using MathNet.Numerics.Data.Matlab;
 using MathNet.Numerics.LinearAlgebra;
 using System.IO;
 
-namespace VisorMat;
+namespace MatVisor;
 
 public partial class MainWindow : Window
 {
@@ -34,13 +34,13 @@ public partial class MainWindow : Window
         if (string.IsNullOrWhiteSpace(_filePath))
         {
             FilePathText.Text = "Elige un archivo .mat para comenzar.";
-            StatusText.Text = "También puedes iniciar VisorMat entregándole la ruta de un archivo .mat.";
+            StatusText.Text = "También puedes iniciar MatVisor entregándole la ruta de un archivo .mat.";
             return;
         }
 
         FilePathText.Text = Path.GetFullPath(_filePath);
         StatusText.Text = "Preparando la lectura del archivo…";
-        Title = $"VisorMat — {Path.GetFileName(_filePath)}";
+        Title = $"MatVisor — {Path.GetFileName(_filePath)}";
     }
 
     private async Task LoadLaunchFileAsync()
@@ -114,7 +114,7 @@ public partial class MainWindow : Window
         SaveEightColumnsButton.IsVisible = false;
         CloseAnalysisWindow();
         ShowNineColumns();
-        Title = $"VisorMat — {Path.GetFileName(filePath)}";
+        Title = $"MatVisor — {Path.GetFileName(filePath)}";
         MatrixPanel.IsVisible = true;
     }
 

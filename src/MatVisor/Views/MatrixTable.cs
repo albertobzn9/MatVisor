@@ -6,7 +6,7 @@ using MathNet.Numerics.LinearAlgebra;
 using System.Globalization;
 using System.Text;
 
-namespace VisorMat;
+namespace MatVisor;
 
 internal sealed class MatrixTable : Grid
 {

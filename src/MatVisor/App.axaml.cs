@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 
-namespace VisorMat;
+namespace MatVisor;
 
 public partial class App : Application
 {

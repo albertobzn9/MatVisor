@@ -1,9 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="using:VisorMat"
-        x:Class="VisorMat.MainWindow"
-        Title="VisorMat"
-        Icon="/Assets/visormat.ico"
+        xmlns:local="using:MatVisor"
+        x:Class="MatVisor.MainWindow"
+        Title="MatVisor"
+        Icon="/Assets/matvisor.ico"
         Width="960"
         Height="640"
         MinWidth="640"
@@ -13,7 +13,7 @@
     <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
       <TextBlock FontSize="28"
                  FontWeight="SemiBold"
-                 Text="VisorMat" />
+                 Text="MatVisor" />
       <Button Grid.Column="1"
               Padding="14,8"
               Click="OpenFileButton_Click"

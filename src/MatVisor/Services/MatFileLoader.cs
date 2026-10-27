@@ -2,7 +2,7 @@ using MathNet.Numerics.Data.Matlab;
 using MathNet.Numerics.LinearAlgebra;
 using System.IO;
 
-namespace VisorMat;
+namespace MatVisor;
 
 internal static class MatFileLoader
 {

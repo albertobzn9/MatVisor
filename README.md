@@ -1,73 +1,75 @@
-# VisorMat
+# MatVisor
 
-Una herramienta de escritorio multiplataforma, construida con .NET y Avalonia UI, diseñada para investigadores que necesitan inspeccionar archivos `.mat` sin tener que abrir MATLAB.
+<p align="center">
+  <img src="src/MatVisor/Assets/matvisor-mark.png" alt="MatVisor logo" width="150" />
+</p>
 
-> Estado actual: VisorMat permite elegir un archivo `.mat` desde la aplicación, abrirlo desde la terminal y, en macOS, abrirlo con doble clic desde Finder cuando `VisorMat.app` está instalada.
+<p align="center">
+  A lightweight desktop viewer for MATLAB <code>.mat</code> matrices, built with .NET and Avalonia.<br />
+  <a href="README.md">English</a> · <a href="README.es.md">Español</a>
+</p>
 
-## El Problema
-Abrir MATLAB solo para revisar si los datos de un entrenamiento son correctos consume tiempo y memoria RAM. VisorMat resuelve esto permitiendo una inspección instantánea.
+MatVisor opens numeric MATLAB matrices without requiring MATLAB. It is designed for fast inspection, copying data to Excel, and preparing 9-column behavioral matrices for review.
 
-## Características
-- **Apertura Instantánea:** Compilado de forma nativa para Windows (C#/.NET).
-- **Doble clic en macOS:** La app registrada en Aplicaciones recibe archivos `.mat` abiertos desde Finder.
-- **Interoperabilidad:** Permite seleccionar datos y copiarlos (`Cmd/Ctrl + C`) con formato de celdas para pegarlos directamente en Excel.
-- **Visualización Limpia:** Formateo a dos decimales y resaltado de filas para mejorar la legibilidad de matrices grandes.
-- **Vista de 8 columnas:** En matrices de 9 columnas, permite alternar entre la matriz original y una vista que elimina las filas cuyo valor en la columna 9 es `2`, además de quitar esa columna de la vista.
-- **Análisis de grupos:** En matrices de 8 o 9 columnas, genera a la derecha las columnas 9–12: valores de D filtrados por columna 8, separados por C=0 y C=1, con el promedio de sus tres conjuntos.
-- **Portabilidad:** No requiere MATLAB instalado en la computadora; Avalonia UI permite que la misma app funcione en macOS y Windows.
+## Features
 
-## Instalación
-Descarga el ejecutable desde la sección **[Releases]**. Es un archivo único "Self-Contained" que funciona en cualquier PC del laboratorio.
+- Open numeric `.mat` matrices from the app, command line, or by double-clicking an associated file on macOS.
+- Select cell ranges with the mouse and copy them with `Ctrl+C` or `⌘C`.
+- Switch a 9-column matrix to an 8-column view, removing rows where column 9 equals `2` and renumbering column 1.
+- Save the derived 8-column matrix as a compatible `.mat` file.
+- Generate a separate analysis window that splits values into three groups and displays their averages.
+- Run on macOS and Windows from self-contained releases.
 
-## Ejecutar la base Avalonia
+## Download
 
-Requiere el SDK de .NET 10. Desde la raíz del repositorio:
+Download the installer or portable package for your operating system from the [latest release](https://github.com/albertobzn9/MatVisor/releases/latest).
 
-```bash
-dotnet run -- /ruta/a/archivo.mat
-```
+macOS packages include a `.dmg` and a portable `.zip`. Windows packages include a standalone `.exe` and a portable `.zip`.
 
-Pulsa **Abrir archivo .mat…** y selecciona el archivo, o inicia la aplicación con su ruta. La ventana debe mostrar el nombre y las dimensiones de la primera matriz numérica, además de sus valores en una tabla. Esta versión aún no permite seleccionar otras variables del archivo.
+## Run from source
 
-Cuando la matriz tiene exactamente 9 columnas, aparecen los botones **9 columnas** y **8 columnas**. El primero muestra el original. El segundo elimina las filas que tienen `2` en la novena columna, presenta únicamente las primeras ocho columnas y renumera la primera columna sin huecos. En esa vista aparece **Guardar matriz de 8 columnas…**, que crea un nuevo archivo `.mat` con la variable `Resultados`; el archivo original no se modifica.
-
-Para seleccionar varias celdas, haz clic en la primera y arrastra el cursor hasta la última. `Cmd+A` selecciona toda la matriz en macOS y `Ctrl+A` hace lo mismo en Windows; `Cmd+C` o `Ctrl+C` copia el rango seleccionado para pegarlo en Excel.
-
-En una matriz de 8 o 9 columnas aparece además **Generar análisis (cols. 9–12)**. Conserva la tabla cargada y abre los resultados en una ventana independiente, que puedes mover o redimensionar para compararla con el original. Ambas ventanas incluyen controles de zoom de 60% a 140%, para reducir las dos tablas y verlas lado a lado. Sólo toma los valores de D (columna 4) de las filas donde la columna 8 sea mayor que `1`; después los separa según C (columna 3) sea `0` o `1`. Cada lista se divide, sin alterar el orden, en tres partes. Si sobran uno o dos valores tras dividir entre tres, se agregan primero al conjunto 1 y luego al conjunto 2. Las columnas 9 y 10 muestran los valores de cada conjunto, su promedio y una separación antes del siguiente conjunto; las columnas 11 y 12 presentan el resumen de esos tres promedios. Un conjunto vacío se presenta como `n/a`.
-
-## Publicación temporal para comprobar cada sistema
-
-Para generar un ejecutable autocontenido de prueba para Windows:
+Requirements: [.NET SDK 10](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```bash
-dotnet publish -c Release -r win-x64 --self-contained true
+git clone https://github.com/albertobzn9/MatVisor.git
+cd MatVisor
+dotnet run --project src/MatVisor/MatVisor.csproj
 ```
 
-Para macOS con Apple Silicon:
+To open a file directly:
 
 ```bash
-dotnet publish -c Release -r osx-arm64 --self-contained true
+dotnet run --project src/MatVisor/MatVisor.csproj -- /path/to/matrix.mat
 ```
 
-La asociación por doble clic en Windows se añadirá junto con un instalador de Windows. En macOS, se configura al instalar `VisorMat.app` desde el DMG.
-
-## Crear una versión para distribuir
-
-En macOS, el siguiente comando genera un `.dmg` y un `.zip` con `VisorMat.app` para Apple Silicon, además de un `.exe` autocontenido y su `.zip` para Windows de 64 bits:
-
-```bash
-./scripts/package-release.sh 1.1.0
-```
-
-Los cuatro archivos se guardan en `artifacts/release/1.1.0`. El `.dmg` permite arrastrar VisorMat a Aplicaciones; el `.exe` de Windows se abre con doble clic y no requiere que .NET esté instalado. Los paquetes sin firmar pueden mostrar una advertencia de seguridad al descargarse.
-
-## Archivo Paralelo En Drive
-
-El snapshot usado como evidencia tutoral se conserva en:
+## Repository layout
 
 ```text
-/Users/ab/Library/CloudStorage/GoogleDrive-jasjabs19@gmail.com/My Drive/workspace/04_doctorado/02_evaluacion-tutoral/01_sources/04_repos_del_proyecto/02_VisorMat-main
+src/MatVisor/       Avalonia application, assets, views, models, and services
+docs/               Architecture and behavior notes for contributors
+packaging/          macOS application metadata
+scripts/            Local release-packaging script
+.github/workflows/  Continuous build for the Windows executable
 ```
 
-Es una copia histórica de referencia. El trabajo activo y las correcciones se
-hacen únicamente en este repositorio.
+See [the architecture guide](docs/README.md) for the role of each component and the matrix-processing rules.
+
+## Build a release locally
+
+On macOS, create the four distributable files with:
+
+```bash
+./scripts/package-release.sh 1.3.0
+```
+
+The script produces a macOS `.dmg`, a macOS `.zip`, a Windows `.exe`, and a Windows `.zip` under `artifacts/release/<version>/`.
+
+## Technology
+
+- [.NET 10](https://dotnet.microsoft.com/)
+- [Avalonia UI](https://avaloniaui.net/)
+- [MathNet.Numerics.Data.Matlab](https://www.nuget.org/packages/MathNet.Numerics.Data.Matlab)
+
+## License
+
+This repository currently does not declare a license. Contact the repository owner before redistributing or reusing the code.
